@@ -1,20 +1,20 @@
-name: Purge candidate build
-run-name: Purge candidate ${{ inputs.suffix }} from ${{ github.ref_name }}
+name: Purge fork release
+run-name: Release ${{ github.ref_name }}
 on:
-  workflow_dispatch:
-    inputs:
-      suffix:
-        description: Candidate suffix (for example rc1)
-        required: true
-        default: rc1
-        type: string
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[1-9]'
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc[1-9][0-9]+'
 permissions:
-  contents: read
+  contents: write
 jobs:
-  build:
+  release:
+    if: github.repository == 'RoodraNambisa/dsh-purge' && !github.event.deleted
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -24,25 +24,29 @@ jobs:
           npm --prefix packages/purge-panel ci --ignore-scripts --legacy-peer-deps
           npm run check:docs
           npm test
-      - name: Pack and verify candidate
-        id: pack
-        env:
-          CANDIDATE_SUFFIX: ${{ inputs.suffix }}
+      - name: Build and verify release assets
         run: |
           set -euo pipefail
-          version="$(node --input-type=module <<'JS'
+          version="${GITHUB_REF_NAME#v}"
+          node --input-type=module <<'JS'
           import fs from "node:fs";
           const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
-          const suffix = process.env.CANDIDATE_SUFFIX;
-          if (!/^rc[1-9]\d*$/.test(suffix)) throw Error("Use a candidate suffix such as rc1.");
-          if (!/^\d+\.\d+\.\d+$/.test(pkg.version)) throw Error("Expected a stable base version.");
-          pkg.version += `-${suffix}`;
-          pkg.dsh.install.preferred = "git";
-          delete pkg.dsh.install.tarball;
+          const { GITHUB_REF_NAME: tag, GITHUB_SERVER_URL, GITHUB_REPOSITORY } = process.env;
+          const match = /^v(\d+\.\d+\.\d+)-rc[1-9]\d*$/.exec(tag);
+          if (!match || match[1] !== pkg.version) {
+            throw Error("Use vX.Y.Z-rcN with the base version in package.json.");
+          }
+          const version = tag.slice(1);
+          const notes = fs.readFileSync(`docs/releases/${version}.md`, "utf8");
+          const [heading, ...body] = notes.split("\n");
+          if (Buffer.byteLength(notes) > 8192 || heading.trim() !== `# ${version}` ||
+              !body.some(line => line.trim())) {
+            throw Error("Expected versioned release notes under docs/releases, up to 8 KiB.");
+          }
+          pkg.version = version;
+          pkg.dsh.install.tarball = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${tag}/${pkg.name}-${version}.tgz`;
           fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
-          console.log(pkg.version);
           JS
-          )"
           npm run build:client
           npm run check:client
           npm run test:ui
@@ -51,10 +55,14 @@ jobs:
           archive="dsh-purge-community-$version.tgz"
           SMOKE_TGZ="$PWD/dist/$archive" node scripts/smoke.mjs
           (cd dist && sha256sum "$archive" > SHA256SUMS.txt)
-          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
-      - name: Upload candidate package
-        uses: actions/upload-artifact@v4
-        with:
-          name: dsh-purge-community-${{ steps.pack.outputs.version }}
-          path: dist/
-          if-no-files-found: error
+      - name: Publish fork release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          git fetch --no-tags origin "refs/tags/$GITHUB_REF_NAME"
+          test "$(git rev-parse 'FETCH_HEAD^{commit}')" = "$(git rev-parse HEAD)"
+          (cd dist && sha256sum -c SHA256SUMS.txt)
+          gh release create "$GITHUB_REF_NAME" "dist/dsh-purge-community-$version.tgz" dist/SHA256SUMS.txt \
+            --verify-tag --title "dsh-purge Community $version" --notes-file "docs/releases/$version.md"
