@@ -62,7 +62,7 @@ export const GROUP_ORDER = ["prompt", "code", "tools", "compat", "dsh20"];
 
 // 补丁按"谁在管它"分成三组，状态页的开关和计数都按这个口径走。
 export const PERMISSION_PATCH_IDS = [
-  6, 7, 8, 9, 10, 13, 14, 15, 16, 35, 51, 59, 60, 62,
+  6, 7, 8, 9, 10, 13, 14, 15, 16, 33, 35, 48, 51, 59, 60, 62,
 ];
 export const CONTEXT_PATCH_IDS = [18, 19];
 export const NA_PATCH_IDS = [54, 76, 80];

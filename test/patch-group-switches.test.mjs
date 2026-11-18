@@ -33,6 +33,8 @@ test("默认：权限补丁开、上下文管理关", () => {
 test("两个开关各自独立生效，互不影响", () => {
   const permOff = { permissionPatches: false, contextManagement: false };
   assert.equal(patchEnabled(patch(6), permOff), false);
+  assert.equal(patchEnabled(patch(33), permOff), false);
+  assert.equal(patchEnabled(patch(48), permOff), false);
   assert.equal(patchEnabled(patch(17), permOff), true, "非权限补丁不受影响");
   const permOnCtxOff = { permissionPatches: true, contextManagement: false };
   assert.equal(patchEnabled(patch(9), permOnCtxOff), true);

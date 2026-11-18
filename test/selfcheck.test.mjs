@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 import { selfCheck, rollupLayers, BYPASS_LAYERS } from "../lib/selfcheck.js";
 import { inspectPresetText, refinePresetDiagnostic } from "../lib/preset-diagnostic.js";
 import { ALL_PATCHES, patchStatus } from "../lib/core.js";
+import { writeTuning } from "../lib/tuning.js";
 
 function fakeHome() {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "purge-selfcheck-"));
@@ -79,6 +80,27 @@ test("runtime inject and profile policy are detected from the real files", async
     else process.env.DSH_SURFACE = prevSurface;
     f.close();
   }
+});
+
+test("selfcheck accepts the observed native policy when permission patches are off", async (t) => {
+  const fixture = fakeHome();
+  t.after(fixture.close);
+  fs.writeFileSync(path.join(fixture.profile, "cordis.patch.yml"), "[]\n");
+  writeTuning({ permissionPatches: false }, fixture.home);
+  const service = {
+    defaultPreset: "workspace-write",
+    resolve: () => ({ sandbox: "workspace-write", approval: "ask" }),
+  };
+  const options = { profile: "desktop", ctx: { get: name => name === "permissionPresets" ? service : undefined } };
+  const report = await selfCheck(path.join(fixture.home, "no-host"), fixture.home, options);
+  const policy = report.layers.find(layer => layer.kind === "config");
+  assert.equal(policy.state, "ok");
+  assert.equal(policy.detail.sandbox, "workspace-write");
+  assert.equal(policy.detail.approval, "ask");
+  assert.deepEqual(policy.broken, []);
+
+  const offline = await selfCheck(path.join(fixture.home, "no-host"), fixture.home, { profile: "desktop" });
+  assert.equal(offline.layers.find(layer => layer.kind === "config").state, "unknown");
 });
 
 test("pending patches are not reported as broken layers", () => {

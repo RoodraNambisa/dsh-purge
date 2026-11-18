@@ -140,7 +140,7 @@ export const zh = {
   "sw.permission": "权限补丁",
   "sw.permission.desc": "让宿主不再用沙箱边界和审批弹窗拦工具调用。默认开。",
   "sw.permission.hint":
-    "改写宿主里的沙箱 / 审批 / 自动放行代码，共 14 条：#6 #7 #8 #9 #10 #13 #14 #15 #16 #35 #51 #59 #60 #62。开启后必须点「应用」才写盘，写前自动备份；需要你手动退出重开 DSH 才生效。关掉它不会立刻回滚已写入的文件，下次「应用」才回滚。",
+    "控制沙箱、审批和相关工具提示的 16 条补丁。点「应用」时先自动备份再写盘，手动退出重开 DSH 后生效。关闭开关后，下一次「应用」会撤回已写入的这组补丁。",
   "sw.context": "上下文管理",
   "sw.context.desc":
     "关掉重复调用提醒与工具结果修剪。默认关，开了 token 会涨。",
@@ -640,7 +640,7 @@ export const en = {
   "sw.permission.desc":
     "Stop the host from blocking tool calls behind sandbox and approval gates. On by default.",
   "sw.permission.hint":
-    "Rewrites the host sandbox / approval / auto-grant code: 14 patches (#6 #7 #8 #9 #10 #13 #14 #15 #16 #35 #51 #59 #60 #62). Nothing is written until you press Apply, and a backup is taken first; you must quit and reopen DSH yourself. Turning it off does not roll back what is already written; the next Apply does.",
+    "Controls 16 patches for sandboxing, approvals, and related tool instructions. Apply takes a backup before writing. Quit and reopen DSH to load the changes. After you turn it off, the next Apply rolls back these patches.",
   "sw.context": "Context management",
   "sw.context.desc":
     "Turn off the repeat-call reminder and tool-result pruning. Off by default; tokens grow when on.",
