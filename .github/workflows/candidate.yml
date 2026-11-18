@@ -1,0 +1,60 @@
+name: Purge candidate build
+run-name: Purge candidate ${{ inputs.suffix }} from ${{ github.ref_name }}
+on:
+  workflow_dispatch:
+    inputs:
+      suffix:
+        description: Candidate suffix (for example rc1)
+        required: true
+        default: rc1
+        type: string
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate source
+        run: |
+          npm ci --ignore-scripts --legacy-peer-deps
+          npm --prefix packages/purge-panel ci --ignore-scripts --legacy-peer-deps
+          npm run check:docs
+          npm test
+      - name: Pack and verify candidate
+        id: pack
+        env:
+          CANDIDATE_SUFFIX: ${{ inputs.suffix }}
+        run: |
+          set -euo pipefail
+          version="$(node --input-type=module <<'JS'
+          import fs from "node:fs";
+          const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+          const suffix = process.env.CANDIDATE_SUFFIX;
+          if (!/^rc[1-9]\d*$/.test(suffix)) throw Error("Use a candidate suffix such as rc1.");
+          if (!/^\d+\.\d+\.\d+$/.test(pkg.version)) throw Error("Expected a stable base version.");
+          pkg.version += `-${suffix}`;
+          pkg.dsh.install.preferred = "git";
+          delete pkg.dsh.install.tarball;
+          fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+          console.log(pkg.version);
+          JS
+          )"
+          npm run build:client
+          npm run check:client
+          npm run test:ui
+          mkdir dist
+          npm pack --ignore-scripts --pack-destination dist
+          archive="dsh-purge-community-$version.tgz"
+          SMOKE_TGZ="$PWD/dist/$archive" node scripts/smoke.mjs
+          (cd dist && sha256sum "$archive" > SHA256SUMS.txt)
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
+      - name: Upload candidate package
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsh-purge-community-${{ steps.pack.outputs.version }}
+          path: dist/
+          if-no-files-found: error

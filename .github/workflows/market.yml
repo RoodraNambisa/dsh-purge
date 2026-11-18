@@ -1,11 +1,6 @@
 name: Publish plugin market
 on:
-  workflow_run:
-    workflows: ['Community release']
-    types: [completed]
   workflow_dispatch:
-  schedule:
-    - cron: '17 * * * *'
 permissions:
   contents: read
   pages: write
@@ -15,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.repository == 'kingcharleslzy-ai/dsh-purge' && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success')
+    if: github.repository == 'kingcharleslzy-ai/dsh-purge'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

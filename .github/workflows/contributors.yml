@@ -1,14 +1,6 @@
 name: Update contributor avatars
 on:
-  schedule:
-    - cron: '23 2 * * *'
   workflow_dispatch:
-  push:
-    branches: [master]
-    paths:
-      - CONTRIBUTORS.md
-      - scripts/update-contributors.mjs
-      - .github/workflows/contributors.yml
 permissions:
   contents: write
 concurrency:
