@@ -6,8 +6,8 @@
 
 给 DeepSeek Harness 的自托管控件（俗称「破甲」插件）· 86 条宿主补丁 · 25 层状态自检 · 左侧栏整页设置
 
-[![Release](https://img.shields.io/github/v/release/kingcharleslzy-ai/dsh-purge?label=release)](https://github.com/kingcharleslzy-ai/dsh-purge/releases)
-[![Checks](https://github.com/kingcharleslzy-ai/dsh-purge/actions/workflows/community.yml/badge.svg)](https://github.com/kingcharleslzy-ai/dsh-purge/actions/workflows/community.yml)
+[![Release](https://img.shields.io/github/v/release/RoodraNambisa/dsh-purge?label=release)](https://github.com/RoodraNambisa/dsh-purge/releases)
+[![Checks](https://github.com/RoodraNambisa/dsh-purge/actions/workflows/community.yml/badge.svg)](https://github.com/RoodraNambisa/dsh-purge/actions/workflows/community.yml)
 
 当前版本 **1.7.20** · 适配 **DSH Desktop 0.2.2-rc.3**（0.2.2-rc.1 / 0.2.1-rc.1 / rc.2 / rc.3 / rc.5 同样通过） · [English](docs/README.en.md)
 
@@ -69,33 +69,30 @@ dsh-purge Community 是一个跑在你自己机器上的 Harness 附加组件。
 
 ## 安装
 
+本仓库从 [RoodraNambisa/dsh-purge 的 Releases](https://github.com/RoodraNambisa/dsh-purge/releases) 检查更新和下载发行包。发行包尚未上传时，可以[从源码目录安装](docs/INSTALLATION.md#手动选择插件源码目录)。
+
 **让 AI 安装**，把下面这句话发给能操作本机的 Agent：
 
-> 帮我把 https://github.com/kingcharleslzy-ai/dsh-purge 的最新稳定版装到我正在用的 DSH。先读仓库 AGENTS.md 的安装章节，检查有没有旧版，有就保留设置原地迁移。装好告诉我实际版本和 profile，重启由我自己操作。
+> 帮我把 https://github.com/RoodraNambisa/dsh-purge 的最新稳定版装到我正在用的 DSH。先读仓库 AGENTS.md 的安装章节，检查有没有旧版，有就保留设置原地迁移。装好告诉我实际版本和 profile，重启由我自己操作。
 
 ### 方式一：DSH 官方界面（首次安装）
 
-1. 打开 DSH 的「插件 → 发现 → 添加索引源」。如果没有「发现」，先到「插件 → 实验性插件 → 更多」启用「自定义插件市场」。
-2. 在「添加索引源」粘贴这一行，保存后找到 **dsh-purge Community**。
-
-   ```text
-   https://kingcharleslzy-ai.github.io/dsh-purge/index.json
-   ```
-
-3. 核对仓库为 `kingcharleslzy-ai/dsh-purge`，点「安装」。完成后，到已安装插件列表查看 `dsh-purge-community` 的版本。
+1. 从本仓库的[最新稳定发行](https://github.com/RoodraNambisa/dsh-purge/releases/latest)复制带版本号的 TGZ 下载地址。
+2. 在 DSH 的「插件 → 添加插件」中粘贴地址并确认安装。
+3. 到已安装插件列表查看 `dsh-purge-community` 的版本。
 
 **「安装源」通常保持原值即可。** 这个字段用来下载 `yaml` 等 npm 依赖。若详情里出现 `GET https://github.com/…/yaml` 和 404，请在「插件 → 添加插件 → 安装源」选择「npm 官方源」或你平时可用的私有 npm 源，然后重试。[查看三个地址各填哪里](docs/INSTALLATION.md#install-addresses)
 
 **已经装过旧版 Purge 或独立面板？** 直接用下方方式三备份并原地迁移。手动下载了源码 ZIP 的用户请看[从源码目录安装](docs/INSTALLATION.md#手动选择插件源码目录)。
 
-市场维护者可按[索引与安装按钮的接入说明](docs/MARKET-MIGRATION.md)同步稳定发行。
+上游社区市场单独维护，入口见[索引与安装按钮的接入说明](docs/MARKET-MIGRATION.md)。
 
 ### 方式二：DSH 官方 CLI（首次安装）
 
-下面命令适用于**已经安装 `dsh` 命令、且使用 `web` profile 的 CLI/Web 用户**，在 macOS/Linux 终端或 Windows PowerShell 中运行。桌面版用户优先用上面的界面；不要为了安装插件再用 `npx` 下载另一套宿主。
+本仓库发布对应的 TGZ 后，已经安装 `dsh` 命令且使用 `web` profile 的用户可以运行下方命令。桌面版用户使用上面的界面。
 
 ```sh
-dsh plugin --profile web add "https://github.com/kingcharleslzy-ai/dsh-purge/releases/download/v1.7.20/dsh-purge-community-1.7.20.tgz"
+dsh plugin --profile web add "https://github.com/RoodraNambisa/dsh-purge/releases/download/v1.7.20/dsh-purge-community-1.7.20.tgz"
 ```
 
 `web` 必须与实际启动的 profile 一致；自定义数据目录需要沿用该实例的 `DSH_HOME`。命令使用本次发行的固定版本 URL；不是 `npm install -g`，也不是安装裸 npm 包名。本项目通过 GitHub 发行，**不要替换成 `add dsh-purge` 或 `add dsh-purge-community`**。官方 CLI 的安装不会额外运行我们安装器的 Release SHA256 比对及迁移快照；需要这些功能时选方式三。[官方 CLI 安装说明](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/user/develop/basic/publish.zh.md)
@@ -110,7 +107,7 @@ dsh plugin --profile web add "https://github.com/kingcharleslzy-ai/dsh-purge/rel
 
 ```sh
 PURGE_INSTALL_DIR="$(mktemp -d)"
-curl -fSL --connect-timeout 20 --max-time 90 "https://raw.githubusercontent.com/kingcharleslzy-ai/dsh-purge/master/scripts/install.sh" -o "$PURGE_INSTALL_DIR/install.sh"
+curl -fSL --connect-timeout 20 --max-time 90 "https://raw.githubusercontent.com/RoodraNambisa/dsh-purge/master/scripts/install.sh" -o "$PURGE_INSTALL_DIR/install.sh"
 sh "$PURGE_INSTALL_DIR/install.sh" --dry-run
 ```
 
@@ -128,7 +125,7 @@ sh "$PURGE_INSTALL_DIR/install.sh"
 
 ```powershell
 $PurgeInstaller = Join-Path $env:TEMP ('purge-install-' + [guid]::NewGuid().ToString('N') + '.ps1')
-Invoke-WebRequest -UseBasicParsing -TimeoutSec 90 -Uri 'https://raw.githubusercontent.com/kingcharleslzy-ai/dsh-purge/master/scripts/install.ps1' -OutFile $PurgeInstaller
+Invoke-WebRequest -UseBasicParsing -TimeoutSec 90 -Uri 'https://raw.githubusercontent.com/RoodraNambisa/dsh-purge/master/scripts/install.ps1' -OutFile $PurgeInstaller
 powershell -NoProfile -ExecutionPolicy Bypass -File "$PurgeInstaller" -DryRun
 ```
 
@@ -146,7 +143,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "$PurgeInstaller"
 
 ```sh
 PURGE_INSTALL_DIR="$(mktemp -d)"
-curl -fSL --connect-timeout 20 --max-time 90 "https://raw.githubusercontent.com/kingcharleslzy-ai/dsh-purge/master/scripts/install.sh" -o "$PURGE_INSTALL_DIR/install.sh"
+curl -fSL --connect-timeout 20 --max-time 90 "https://raw.githubusercontent.com/RoodraNambisa/dsh-purge/master/scripts/install.sh" -o "$PURGE_INSTALL_DIR/install.sh"
 sh "$PURGE_INSTALL_DIR/install.sh" --dry-run
 ```
 

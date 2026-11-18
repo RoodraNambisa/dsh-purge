@@ -766,7 +766,7 @@ export function CommunityMaintenance({ localVersion = "" } = {}) {
       h(
         "a",
         {
-          href: "https://github.com/kingcharleslzy-ai/dsh-purge/releases",
+          href: "https://github.com/RoodraNambisa/dsh-purge/releases",
           target: "_blank",
           rel: "noreferrer",
         },

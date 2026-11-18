@@ -6,7 +6,7 @@
 
 A self-hosted add-on for DeepSeek Harness (known in the community as a 破甲 / "jailbreak" plugin) · 86 host patches · 25 status layers
 
-[![Release](https://img.shields.io/github/v/release/kingcharleslzy-ai/dsh-purge?label=release)](https://github.com/kingcharleslzy-ai/dsh-purge/releases)
+[![Release](https://img.shields.io/github/v/release/RoodraNambisa/dsh-purge?label=release)](https://github.com/RoodraNambisa/dsh-purge/releases)
 
 Current version 1.7.20 · targets **DSH Desktop 0.2.2-rc.3** (0.2.2-rc.1 / 0.2.1-rc.1 / rc.2 / rc.3 / rc.5 also pass)
 
@@ -52,23 +52,23 @@ Local learning, personal projects, automation experiments and maintenance work. 
 
 **Ask your agent** by copying this request:
 
-> Install the latest stable release of https://github.com/kingcharleslzy-ai/dsh-purge into the DSH instance I use. Read the installation section in AGENTS.md first. If an older Purge is installed, migrate it in place and keep my settings. Report the installed version and profile. Leave the restart to me.
+> Install the latest stable release of https://github.com/RoodraNambisa/dsh-purge into the DSH instance I use. Read the installation section in AGENTS.md first. If an older Purge is installed, migrate it in place and keep my settings. Report the installed version and profile. Leave the restart to me.
 
 **Install by hand in DSH Desktop**
 
-1. Open Plugins → Discover → Add index source. If Discover is missing, enable Custom plugin market under Plugins → Experimental plugins → More.
-2. Paste `https://kingcharleslzy-ai.github.io/dsh-purge/index.json`, save, and select **dsh-purge Community**.
-3. Verify the repository is `kingcharleslzy-ai/dsh-purge`, click Install, then check the version in the installed plugins list.
+1. Copy the versioned TGZ URL from this fork's [latest stable release](https://github.com/RoodraNambisa/dsh-purge/releases/latest).
+2. Paste it in Plugins → Add plugin and confirm the installation.
+3. Check the version of `dsh-purge-community` in the installed plugins list.
 
-Catalog maintainers can synchronize versioned install targets from the [community index](https://kingcharleslzy-ai.github.io/dsh-purge/index.json). Match the package name and repository, and keep the version and commit from the same entry.
+This fork checks for updates on its [Releases page](https://github.com/RoodraNambisa/dsh-purge/releases). Use the [source installation steps](INSTALLATION.md#手动选择插件源码目录) until a release archive is available.
 
-Leave the npm registry at its working value. If pnpm requests `github.com/…/yaml` and gets a 404, open Add plugin, paste the versioned TGZ link from the [latest stable release](https://github.com/kingcharleslzy-ai/dsh-purge/releases/latest) into the package field, select the official npm registry (or your working private registry), and retry.
+Leave the npm registry at its working value. If pnpm requests `github.com/…/yaml` and gets a 404, check that the TGZ URL is in the package field and select the official npm registry or your working private registry.
 
 - Existing legacy Purge or standalone panel installations: use the community installer below for an in-place migration that preserves settings.
-- CLI/Web users who already have `dsh` on PATH and use the `web` profile can use the official command below. Desktop users should not download another npx host to install into their existing desktop profile.
+- CLI/Web users who already have `dsh` on PATH and use the `web` profile can run the command below once the release archive is available.
 
 ```sh
-dsh plugin --profile web add "https://github.com/kingcharleslzy-ai/dsh-purge/releases/download/v1.7.20/dsh-purge-community-1.7.20.tgz"
+dsh plugin --profile web add "https://github.com/RoodraNambisa/dsh-purge/releases/download/v1.7.20/dsh-purge-community-1.7.20.tgz"
 ```
 
 Use the actual instance's profile and `DSH_HOME`. This project distributes via GitHub; do not substitute bare npm package names. The official command does not run our extra Release SHA256 check, migration snapshot or rollback wrapper.

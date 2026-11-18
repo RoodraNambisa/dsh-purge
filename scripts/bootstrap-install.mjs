@@ -8,7 +8,7 @@ import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
 const exec = promisify(execFile);
-const repo = "kingcharleslzy-ai/dsh-purge";
+const repo = "RoodraNambisa/dsh-purge";
 const hosts = new Set(["api.github.com", "github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com"]);
 
 // Keep this module self-contained: the raw installer runs before dependencies exist.
@@ -357,7 +357,10 @@ export async function bootstrapInstall(options = {}) {
     if (!listing.stdout.trim() || listing.stdout.trim().split(/\r?\n/).some(name => !/^package\//.test(name) || name.includes("\\") || name.split("/").some(part => part === ".."))) throw Error("Invalid archive paths");
     await run(tar, ["-xzf", filename], { cwd: tmp, timeout: 30000, windowsHide: true });
     const manifest = JSON.parse(fs.readFileSync(path.join(tmp, "package/package.json"), "utf8"));
-    if (manifest.name !== "dsh-purge-community" || manifest.version !== version || manifest.repository?.url !== `git+https://github.com/${repo}.git`) throw Error("Release package identity mismatch");
+    const repository = manifest.repository?.url;
+    const expectedRepository = repository === `git+https://github.com/${repo}.git` ||
+      (local && repository === "git+https://github.com/kingcharleslzy-ai/dsh-purge.git");
+    if (manifest.name !== "dsh-purge-community" || manifest.version !== version || !expectedRepository) throw Error("Release package identity mismatch");
     const host = platform === "linux" && mode === "web" ? prepareLinuxHost(cli, { userHome: options.userHome, log }) : null;
     if (host) cli = host.cli;
     const result = await run(executable, [path.join(tmp, "package/bin/community.js"), "migrate", file], {

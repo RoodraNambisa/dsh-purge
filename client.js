@@ -13788,7 +13788,7 @@ function CommunityMaintenance({ localVersion = "" } = {}) {
       h(
         "a",
         {
-          href: "https://github.com/kingcharleslzy-ai/dsh-purge/releases",
+          href: "https://github.com/RoodraNambisa/dsh-purge/releases",
           target: "_blank",
           rel: "noreferrer"
         },
@@ -15588,7 +15588,7 @@ function PanelOverlays() {
     // Restored from 1.1.71 apply(): shell.overlay carried the welcome notice
     // and the red-team environment gate next to the dock.
     h(WelcomeNotice, {
-      repo: true ? "https://github.com/kingcharleslzy-ai/dsh-purge" : void 0
+      repo: true ? "https://github.com/RoodraNambisa/dsh-purge" : void 0
     }),
     h(EnvAdaptSendGate),
     st.authOpen ? h(AuthGate, { pending: st.pending }) : null

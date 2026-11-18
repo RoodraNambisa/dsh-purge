@@ -7,16 +7,24 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {bootstrapInstall,verifyChecksum,desktopCli} from '../scripts/bootstrap-install.mjs';
 const version='1.6.8',filename=`dsh-purge-community-${version}.tgz`;
+const repo = 'RoodraNambisa/dsh-purge';
 function fixture(t){
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'purge 空格 '));t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
  const home=path.join(tmp,'home'), profile=path.join(home,'profiles','desktop'),pack=path.join(tmp,'pack');
  fs.mkdirSync(profile,{recursive:true});fs.writeFileSync(path.join(profile,'package.json'),'{}');fs.writeFileSync(path.join(profile,'cordis.patch.yml'),'CURRENT PRIVATE SETTINGS');
  fs.mkdirSync(path.join(pack,'package/bin'),{recursive:true});
- fs.writeFileSync(path.join(pack,'package/package.json'),JSON.stringify({name:'dsh-purge-community',version,repository:{url:'git+https://github.com/kingcharleslzy-ai/dsh-purge.git'}}));
+ fs.writeFileSync(path.join(pack,'package/package.json'),JSON.stringify({name:'dsh-purge-community',version,repository:{url:`git+https://github.com/${repo}.git`}}));
  fs.writeFileSync(path.join(pack,'package/bin/community.js'),`require('node:fs').writeFileSync(process.env.DSH_HOME+'/called.json',JSON.stringify({args:process.argv.slice(2),env:process.env.DSH_PROFILE,cli:process.env.PURGE_DSH_CLI}));`);
  const file=path.join(tmp,filename);const tar=process.platform==='win32'?path.join(process.env.SystemRoot,'System32/tar.exe'):'tar';execFileSync(tar,['-czf',filename,'-C','pack','package'],{cwd:tmp});const bytes=fs.readFileSync(file);
  const sum=createHash('sha256').update(bytes).digest('hex');
- const request=async url=>new Response(url.includes('releases/latest')?JSON.stringify({tag_name:'v'+version}):url.endsWith('.tgz')?bytes:`${sum}  ${filename}\n${sum}  dsh-purge-community.tgz\n`);
+ const request = async url => {
+   if (url === `https://api.github.com/repos/${repo}/releases/latest`)
+     return new Response(JSON.stringify({tag_name:'v'+version}));
+   const base = `https://github.com/${repo}/releases/download/v${version}`;
+   if (url === `${base}/${filename}`) return new Response(bytes);
+   assert.equal(url, `${base}/SHA256SUMS.txt`);
+   return new Response(`${sum}  ${filename}\n${sum}  dsh-purge-community.tgz\n`);
+ };
  return {tmp,home,profileDir:profile,bytes,sum,request,cli:path.join(tmp,'fake-cli.js')};
 }
 test('checksum validates only downloaded filename, rejects mismatch and duplicates',()=>{

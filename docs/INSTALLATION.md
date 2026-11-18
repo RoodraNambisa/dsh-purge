@@ -16,7 +16,7 @@
 | 你正在做什么 | DSH 字段 | 填什么 |
 | --- | --- | --- |
 | 在「发现」里找到插件 | 添加索引源 | `https://kingcharleslzy-ai.github.io/dsh-purge/index.json` |
-| 在「添加插件」里直接安装 | 包名或地址 | 打开[最新稳定发行](https://github.com/kingcharleslzy-ai/dsh-purge/releases/latest)，复制 Assets 中带版本号的 `dsh-purge-community-版本号.tgz` 下载链接 |
+| 在「添加插件」里直接安装 | 包名或地址 | 打开本仓库的[最新稳定发行](https://github.com/RoodraNambisa/dsh-purge/releases/latest)，复制 Assets 中带版本号的 `dsh-purge-community-版本号.tgz` 下载链接 |
 | 下载插件依赖（如 `yaml`） | 安装源（npm registry） | 通常保留原值；公共 npm 源是 `https://registry.npmjs.org/`，使用私有源的用户沿用有效配置 |
 
 从市场卡片点「安装」时，DSH 已经知道要装哪个插件，无需再填「包名或地址」。
